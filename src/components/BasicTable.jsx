@@ -14,7 +14,15 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 export default function BasicTable() {
   const [tableData, setTableData] = useState([]);
-  const handleDelete = (e) => {};
+  const handleDelete = (rowId) => {
+    const updatedData = tableData.filter((item) => item.id !== rowId);
+    setTableData(updatedData);
+  };
+
+  const handleEdit = (e) => {
+    // e.preventDefault();
+    // console.log(e);
+  };
 
   useEffect(() => {
     axios
@@ -33,9 +41,9 @@ export default function BasicTable() {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell align="center">Title</TableCell>
-            <TableCell align="center">Description</TableCell>
-            <TableCell align="center">Category</TableCell>
             <TableCell align="center">Price</TableCell>
+            <TableCell align="center">Description</TableCell>
+            <TableCell align="center">Category Name</TableCell>
             <TableCell align="center">Edit</TableCell>
             <TableCell align="center">Delete</TableCell>
           </TableRow>
@@ -50,14 +58,17 @@ export default function BasicTable() {
                 {row.id}
               </TableCell>
               <TableCell align="left">{row.title}</TableCell>
-              <TableCell align="left">{row.description}</TableCell>
-              <TableCell align="left">{row.category.name}</TableCell>
               <TableCell align="left">{row.price}</TableCell>
+              <TableCell align="left">{row.description}</TableCell>
+              <TableCell align="center">{row.category.name}</TableCell>
               <TableCell>
-                <EditIcon />
+                <EditIcon style={{ cursor: "pointer" }} onClick={handleEdit} />
               </TableCell>
               <TableCell>
-                <HighlightOffIcon onClick={handleDelete} />
+                <HighlightOffIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleDelete(row.id)}
+                />
               </TableCell>
             </TableRow>
           ))}
