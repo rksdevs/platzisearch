@@ -13,34 +13,61 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { TableContext } from "../context/TableContext";
 import styled from "styled-components";
 import EditTableModal from "./EditTableModal";
+import Switch from "@mui/material/Switch";
+import { keys } from "@mui/system";
 
 const TableHeadingContainer = styled.div``;
 const TableName = styled.h2``;
 const FetchData = styled.button``;
+const SearchContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  justify-content: space-evenly;
+`;
+const SearchInputDiv = styled.div``;
+
+const SelectInputDiv = styled.div``;
+const ToggleInputDiv = styled.div``;
 
 export default function BasicTable() {
   const { tableData, loading, error, dispatch } = useContext(TableContext);
-  const [tableDataRaw, setTableDataRaw] = useState([]);
-  const [tableDataToMap, setTableDataToMap] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [rowIdToEdit, setRowIdToEdit] = useState(0);
   const [open, setOpen] = useState(false);
+  const label = { inputProps: { "aria-label": "Switch demo" } };
+  const [sortCategory, setSortCategory] = useState("id");
+  const [toggleDescending, setToggleDescending] = useState(true);
+  const [query, setQuery] = useState("");
 
   //Function to fetch data from API & store in local storage
 
-  const fetchApiData = () => {
-    axios
+  const fetchApiData = async () => {
+    await axios
       .get("https://api.escuelajs.co/api/v1/products")
       .then((res) => {
-        console.log(res.data);
-        setTableDataRaw(res.data.splice(1, 20));
-        localStorage.setItem("tableData", JSON.stringify(tableDataRaw));
+        dispatch({
+          type: "TABLE_DATA_FETCH_SUCCESS",
+          payload: res.data.splice(1, 20),
+        });
       })
       .catch((err) => console.log(err));
   };
 
   //Fetching Data only once and sending it to localStorage
+
   useEffect(() => {
-    fetchApiData();
+    const fetchTableData = async () => {
+      const result = await axios.get(
+        "https://api.escuelajs.co/api/v1/products"
+      );
+      dispatch({
+        type: "TABLE_DATA_FETCH_SUCCESS",
+        payload: result.data.splice(1, 20),
+      });
+    };
+    fetchTableData();
   }, []);
 
   //Refetching the data on Refetch click
@@ -48,81 +75,135 @@ export default function BasicTable() {
   const refetchData = async (e) => {
     e.preventDefault();
     fetchApiData();
-    try {
-      dispatch({ type: "TABLE_DATA_FETCH_SUCCESS", payload: tableDataRaw });
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
   };
 
   //Deleting data from Table
   const handleDelete = async (rowId) => {
     const updatedData = tableData.filter((item) => item.id !== rowId);
-    // setTableData(updatedData);
     try {
-      dispatch({ type: "TABLE_DATA_DELETE_SUCCESS", payload: updatedData });
+      dispatch({ type: "TABLE_DATA_DELETE_SUCCESS", payload: updatedData }); //deleted from local storage
     } catch (error) {
       console.log(error);
       throw error;
     }
   };
 
-  const handleEdit = (e) => {
-    e.preventDefault();
-    // console.log(e);
+  const handleEdit = (rowId) => {
     setModalOpen(!modalOpen);
+    setRowIdToEdit(rowId);
   };
 
-  useEffect(() => {
-    setTableDataToMap(tableData);
-  }, [tableData]);
+  //
+  const handleDropDown = (e) => {
+    setSortCategory(e.target.value);
+    console.log(sortCategory);
+
+    function compare(a, b) {
+      console.log(sortCategory);
+      if (a.sortCategory < b.sortCategory) {
+        return -1;
+      }
+      if (a.sortCategory > b.sortCategory) {
+        return 1;
+      }
+      return 0;
+    }
+    tableData.sort(compare);
+  };
+
+  const handleToggle = (e) => {
+    setToggleDescending(!toggleDescending);
+  };
+
+  const search = (data) => {
+    return data.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        item.category.name.toLowerCase().includes(query) ||
+        item.price.toString().toLowerCase().includes(query)
+    );
+  };
 
   return (
-    <TableContainer component={Paper}>
-      <TableHeadingContainer>
-        <TableName>Product List From Platzi</TableName>
-        <FetchData onClick={refetchData}>Refetch Data From API</FetchData>
-      </TableHeadingContainer>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell align="center">Title</TableCell>
-            <TableCell align="center">Price</TableCell>
-            <TableCell align="center">Description</TableCell>
-            <TableCell align="center">Category Name</TableCell>
-            <TableCell align="center">Edit</TableCell>
-            <TableCell align="center">Delete</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {tableDataToMap?.map((row) => (
-            <TableRow
-              key={row.id}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.id}
-              </TableCell>
-              <TableCell align="left">{row.title}</TableCell>
-              <TableCell align="left">{row.price}</TableCell>
-              <TableCell align="left">{row.description}</TableCell>
-              <TableCell align="center">{row.category.name}</TableCell>
-              <TableCell>
-                <EditIcon style={{ cursor: "pointer" }} onClick={handleEdit} />
-              </TableCell>
-              <TableCell>
-                <HighlightOffIcon
-                  style={{ cursor: "pointer" }}
-                  onClick={() => handleDelete(row.id)}
-                />
-              </TableCell>
+    <>
+      <SearchContainer>
+        <SearchInputDiv>
+          <input
+            type="text"
+            placeholder="search"
+            onChange={(e) => setQuery(e.target.value.toLowerCase())}
+          />
+        </SearchInputDiv>
+        <SelectInputDiv>
+          <select id="sortType" name="sortType" onClick={handleDropDown}>
+            <option value="id">Id</option>
+            <option value="title">Title</option>
+            <option value="price">Price</option>
+            <option value="description">Description</option>
+            <option value="category">Category Name</option>
+          </select>
+        </SelectInputDiv>
+        <ToggleInputDiv>
+          Ascending
+          <Switch {...label} onClick={handleToggle} />
+          Descending
+        </ToggleInputDiv>
+      </SearchContainer>
+      <TableContainer component={Paper}>
+        <TableHeadingContainer>
+          <TableName>Product List From Platzi</TableName>
+          <FetchData onClick={refetchData}>Refetch Data From API</FetchData>
+        </TableHeadingContainer>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell align="center">Title</TableCell>
+              <TableCell align="center">Price</TableCell>
+              <TableCell align="center">Description</TableCell>
+              <TableCell align="center">Category Name</TableCell>
+              <TableCell align="center">Edit</TableCell>
+              <TableCell align="center">Delete</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      {modalOpen && <EditTableModal setOpen={setModalOpen} />}
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {search(tableData)?.map((row) => (
+              <TableRow
+                key={row.id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {row.id}
+                </TableCell>
+                <TableCell align="left">{row.title}</TableCell>
+                <TableCell align="left">{row.price}</TableCell>
+                <TableCell align="left">{row.description}</TableCell>
+                <TableCell align="center">{row.category.name}</TableCell>
+                <TableCell>
+                  <EditIcon
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleEdit(row.id)}
+                  />
+                  {modalOpen && (
+                    <EditTableModal
+                      setOpen={setModalOpen}
+                      productId={rowIdToEdit}
+                    />
+                  )}
+                </TableCell>
+
+                <TableCell>
+                  <HighlightOffIcon
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleDelete(row.id)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }

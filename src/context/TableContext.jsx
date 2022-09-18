@@ -35,7 +35,6 @@ export const TableContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(TableReducer, INITIAL_STATE);
 
   useEffect(() => {
-    console.log(state.tableData);
     localStorage.setItem("tableData", JSON.stringify(state.tableData));
   }, [state.tableData]);
 

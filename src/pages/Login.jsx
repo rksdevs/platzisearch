@@ -51,6 +51,7 @@ const Login = () => {
   };
   const handleClick = async (e) => {
     e.preventDefault();
+    console.log(credentials);
     dispatch({ type: "LOGIN_START" });
     try {
       dispatch({ type: "LOGIN_SUCCESS", payload: credentials });

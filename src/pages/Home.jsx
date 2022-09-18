@@ -29,13 +29,12 @@ const TableContainer = styled.div``;
 const FetchData = styled.div``;
 
 const Home = () => {
-  const label = { inputProps: { "aria-label": "Switch demo" } };
   return (
     <MainContainer>
       <HeadingContainer>
         <Heading>Platzi Table</Heading>
       </HeadingContainer>
-      <SearchContainer>
+      {/* <SearchContainer>
         <SearchInputDiv>
           <input type="text" placeholder="search" />
         </SearchInputDiv>
@@ -49,9 +48,11 @@ const Home = () => {
           </select>
         </SelectInputDiv>
         <ToggleInputDiv>
+          Ascending
           <Switch {...label} />
+          Descending
         </ToggleInputDiv>
-      </SearchContainer>
+      </SearchContainer> */}
       <TableContainer>
         <BasicTable />
       </TableContainer>

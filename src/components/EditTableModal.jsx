@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { useState } from "react";
+import { useContext } from "react";
+import { TableContext } from "../context/TableContext";
 
 const ModalContainer = styled.div`
   width: 100vw;
@@ -60,7 +62,8 @@ const SubmitContainer = styled.div`
 `;
 const SubmitButton = styled.button``;
 
-const EditTableModal = () => {
+const EditTableModal = ({ productId, setOpen }) => {
+  const { tableData, loading, error, dispatch } = useContext(TableContext);
   const [productInfo, setProductInfo] = useState({
     productTitle: undefined,
     productPrice: undefined,
@@ -68,20 +71,39 @@ const EditTableModal = () => {
     productCategory: undefined,
   });
   const handleChange = (e) => {
-    setProductInfo((prev) => ({ ...prev, [e.target.value]: e.target.value }));
+    setProductInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
   const handleClick = async (e) => {
     e.preventDefault();
+
+    for (let i = 0; i < tableData.length; i++) {
+      // console.log(tableData[i]);
+      //target the object having the same product id
+      if (tableData[i].id === productId) {
+        tableData[i].title = productInfo.productTitle;
+        tableData[i].price = productInfo.productPrice;
+        tableData[i].description = productInfo.productDesc;
+        tableData[i].category.name = productInfo.productCategory;
+        // console.log(tableData);
+      }
+    }
+    // console.log(tableData);
+    // update the data for that object
+    //dispatch the updated object
+
     try {
+      dispatch({ type: "TABLE_DATA_EDIT_SUCCESS", payload: tableData });
+      setOpen(false);
     } catch (error) {}
   };
   return (
     <ModalContainer>
       <ModalWrapper>
         <ModalHeadingContainer>
-          <ModalHeading>Edit Product</ModalHeading>
+          <ModalHeading>Edit Product - ID: {productId}</ModalHeading>
           <HighlightOffIcon
             style={{ position: "absolute", top: "10px", right: "10px" }}
+            onClick={() => setOpen(false)}
           />
         </ModalHeadingContainer>
         <ProductContainer>
