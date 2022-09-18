@@ -40,6 +40,10 @@ export default function BasicTable() {
   const [sortCategory, setSortCategory] = useState("id");
   const [toggleDescending, setToggleDescending] = useState(true);
   const [query, setQuery] = useState("");
+  const [sortingOrder, setSortingOrder] = useState("");
+  const [testTableData, setTestTableData] = useState([]);
+  // const [sortField, setSortField] = useState("");
+  // const [order, setOrder] = useState("asc");
 
   //Function to fetch data from API & store in local storage
 
@@ -66,6 +70,7 @@ export default function BasicTable() {
         type: "TABLE_DATA_FETCH_SUCCESS",
         payload: result.data.splice(1, 20),
       });
+      setTestTableData(result.data.splice(1, 20));
     };
     fetchTableData();
   }, []);
@@ -93,28 +98,6 @@ export default function BasicTable() {
     setRowIdToEdit(rowId);
   };
 
-  //
-  const handleDropDown = (e) => {
-    setSortCategory(e.target.value);
-    console.log(sortCategory);
-
-    function compare(a, b) {
-      console.log(sortCategory);
-      if (a.sortCategory < b.sortCategory) {
-        return -1;
-      }
-      if (a.sortCategory > b.sortCategory) {
-        return 1;
-      }
-      return 0;
-    }
-    tableData.sort(compare);
-  };
-
-  const handleToggle = (e) => {
-    setToggleDescending(!toggleDescending);
-  };
-
   const search = (data) => {
     return data.filter(
       (item) =>
@@ -123,6 +106,33 @@ export default function BasicTable() {
         item.category.name.toLowerCase().includes(query) ||
         item.price.toString().toLowerCase().includes(query)
     );
+  };
+
+  //Sorting data
+
+  const handleDropDown = (e) => {
+    setSortCategory(e.target.value);
+    console.log(sortCategory);
+  };
+
+  const handleToggle = (e) => {
+    setToggleDescending(!toggleDescending);
+
+    toggleDescending ? setSortingOrder("asc") : setSortingOrder("des");
+    console.log(sortingOrder);
+    sortingTable();
+  };
+
+  //sorting algorith
+
+  let sortingTable = () => {
+    // const reversed = sortingOrder === "asc" ? 1 : -1;
+    // setTestTableData(
+    //   tableData.sort((a, b) => {
+    //     reversed * a.title.localeCompare(b.title);
+    //   })
+    // );
+    // dispatch({ type: "TABLE_DATA_FETCH_SUCCESS", payload: tempData });
   };
 
   return (
@@ -168,7 +178,7 @@ export default function BasicTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {search(tableData)?.map((row) => (
+            {search(testTableData)?.map((row) => (
               <TableRow
                 key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
