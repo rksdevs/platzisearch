@@ -15,34 +15,93 @@ import styled from "styled-components";
 import EditTableModal from "./EditTableModal";
 import Switch from "@mui/material/Switch";
 
-const TableHeadingContainer = styled.div``;
+const TableHeadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  margin-top: 1em;
+  position: relative;
+  background: #dbdffd;
+  @media only Screen and (max-width: 40em) {
+    flex-direction: row;
+    padding-bottom: 0.5em;
+  }
+`;
 const TableName = styled.h2``;
-const FetchData = styled.button``;
+const FetchData = styled.button`
+  position: absolute;
+  padding: 7px 20px;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  font-size: 1em;
+  font-weight: 600;
+  top: 20px;
+  right: 10px;
+  background: #7b85cb;
+  &:hover {
+    background: #646fd4;
+    box-shadow: 0px 0px 10px 1px #ffffff;
+  }
+  @media only Screen and (max-width: 40em) {
+    padding: 3px;
+    top: 55px;
+    right: 250px;
+    font-size: 14px;
+  }
+`;
 const SearchContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   justify-content: space-evenly;
+  background: #7b85cb;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  @media only Screen and (max-width: 40em) {
+    flex-direction: column;
+  }
 `;
 const SearchInputDiv = styled.div``;
+const TableInputSearch = styled.input`
+font-weight: bold;
+font-size: 1em;
+border-radius: 20px;
+padding: 7px;
+outline: none;
+border: 1px solid black;
+margin-bottom: 5px;
+
+}
+`;
+const TableInputSelect = styled.select`
+border-radius: 20px;
+padding: 7px;
+outline: none;
+border: 1px solid black;
+font-weight: bold;
+font-size: 1em;
+}
+`;
 
 const SelectInputDiv = styled.div``;
-const ToggleInputDiv = styled.div``;
+const ToggleInputDiv = styled.div`
+  font-weight: bold;
+  font-size: 1em;
+`;
 
 export default function BasicTable() {
-  const { tableData, loading, error, dispatch } = useContext(TableContext);
+  const { tableData, dispatch } = useContext(TableContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [rowIdToEdit, setRowIdToEdit] = useState(0);
-  const [open, setOpen] = useState(false);
   const label = { inputProps: { "aria-label": "Switch demo" } };
   const [sortCategory, setSortCategory] = useState("id");
   const [toggleDescending, setToggleDescending] = useState(true);
   const [query, setQuery] = useState("");
   const [sortingOrder, setSortingOrder] = useState("");
 
-  //Function to fetch data from API & store in local storage
-
+  //Function to fetch data from API & store in local storage using reducer
   const fetchApiData = async () => {
     await axios
       .get("https://api.escuelajs.co/api/v1/products")
@@ -55,7 +114,7 @@ export default function BasicTable() {
       .catch((err) => console.log(err));
   };
 
-  //Fetching Data only once and sending it to localStorage
+  //Fetching Data only once and sending it to localStorage via reducer
 
   useEffect(() => {
     const fetchTableData = async () => {
@@ -66,19 +125,18 @@ export default function BasicTable() {
         type: "TABLE_DATA_FETCH_SUCCESS",
         payload: result.data.splice(1, 20),
       });
-      // setTestTableData(result.data.splice(1, 20));
     };
     fetchTableData();
+    // eslint-disable-next-line
   }, []);
 
   //Refetching the data on Refetch click
-
   const refetchData = async (e) => {
     e.preventDefault();
     fetchApiData();
   };
 
-  //Deleting data from Table
+  //Deleting data from Table - delete from storage via reducer
   const handleDelete = async (rowId) => {
     const updatedData = tableData.filter((item) => item.id !== rowId);
     try {
@@ -89,10 +147,13 @@ export default function BasicTable() {
     }
   };
 
+  //handling edit modal open
   const handleEdit = (rowId) => {
     setModalOpen(!modalOpen);
     setRowIdToEdit(rowId);
   };
+
+  //Search function
 
   const search = (data) => {
     return data.filter(
@@ -104,11 +165,9 @@ export default function BasicTable() {
     );
   };
 
-  //Sorting data
-
+  //Sorting data collation from dropdown and toggle
   const handleDropDown = (e) => {
     setSortCategory(e.target.value);
-    // console.log(sortCategory);
   };
 
   const handleToggle = (e) => {
@@ -116,7 +175,7 @@ export default function BasicTable() {
 
     toggleDescending ? setSortingOrder("asc") : setSortingOrder("des");
     console.log(sortingOrder);
-    sortingTable();
+    sortingTable(); //calls sorting on toggling asc/dec
   };
 
   //sorting function
@@ -144,20 +203,24 @@ export default function BasicTable() {
     <>
       <SearchContainer>
         <SearchInputDiv>
-          <input
+          <TableInputSearch
             type="text"
             placeholder="search"
             onChange={(e) => setQuery(e.target.value.toLowerCase())}
           />
         </SearchInputDiv>
         <SelectInputDiv>
-          <select id="sortType" name="sortType" onClickCapture={handleDropDown}>
+          <TableInputSelect
+            id="sortType"
+            name="sortType"
+            onClickCapture={handleDropDown}
+          >
             <option value="id">Id</option>
             <option value="title">Title</option>
             <option value="price">Price</option>
             <option value="description">Description</option>
             <option value="category">Category Name</option>
-          </select>
+          </TableInputSelect>
         </SelectInputDiv>
         <ToggleInputDiv>
           Ascending
@@ -165,7 +228,7 @@ export default function BasicTable() {
           Descending
         </ToggleInputDiv>
       </SearchContainer>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} style={{ background: "white" }}>
         <TableHeadingContainer>
           <TableName>Product List From Platzi</TableName>
           <FetchData onClick={refetchData}>Refetch Data From API</FetchData>

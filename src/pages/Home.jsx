@@ -1,4 +1,3 @@
-import Switch from "@mui/material/Switch";
 import { useContext } from "react";
 import styled from "styled-components";
 import BasicTable from "../components/BasicTable";
@@ -12,32 +11,52 @@ const MainContainer = styled.div`
   align-items: center;
   max-width: 1024px;
   margin: auto;
-  background-color: #eeeeee;
+  background-color: #25316D;
+  position: relative;
 `;
-const HeadingContainer = styled.div``;
-const Heading = styled.h1``;
-
-const SearchContainer = styled.div`
+const HeadingContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  width: 100%;
-  justify-content: space-evenly;
+  @media only Screen and (max-width: 40em) {
+    justify-content: space-around;
+  }
 `;
-const SearchInputDiv = styled.div``;
+const Heading = styled.h1`
+  color: white;
+`;
 
-const SelectInputDiv = styled.div``;
-const ToggleInputDiv = styled.div``;
 const TableContainer = styled.div``;
-const FetchData = styled.div``;
-const LogoutButton = styled.button``;
-const LogoutButtonDiv = styled.div``;
+const LogoutButton = styled.button`
+  padding: 7px 20px;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  font-size: 1em;
+  font-weight: 600;
+  &:hover {
+    background: #646fd4;
+    box-shadow: 0px 0px 10px 1px #ffffff;
+  }
+  @media only Screen and (max-width: 40em) {
+    padding: 6px;
+    font-size: small;
+  }
+`;
+const LogoutButtonDiv = styled.div`
+  position: absolute;
+  right: 50px;
+  @media only Screen and (max-width: 40em) {
+    right: 5px;
+  }
+`;
 
 const Home = () => {
-  const { user, dispatch } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext); //grabbing user context to display logout & dispatch logout reducer
   const navigate = useNavigate();
 
   const handleLogout = (e) => {
+    //logout functionality - dispatch logout & navigate to login screen
     e.preventDefault();
     dispatch({ type: "LOGOUT" });
     navigate("/login");

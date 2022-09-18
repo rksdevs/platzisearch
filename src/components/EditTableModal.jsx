@@ -7,7 +7,7 @@ import { TableContext } from "../context/TableContext";
 const ModalContainer = styled.div`
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.418);
+  background-color: rgba(72, 69, 69, 0.03);
   position: fixed;
   top: 0;
   left: 0;
@@ -22,7 +22,7 @@ const ModalWrapper = styled.div`
   justify-content: center;
   flex-direction: column;
   background-color: darkslateblue;
-  width: 80vw;
+  width: 48.5vw;
 `;
 const ModalHeadingContainer = styled.div`
   display: flex;
@@ -40,19 +40,30 @@ const ProductContainer = styled.div`
 `;
 const ProductForm = styled.form`
   width: 80%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
 `;
 const ProductFormSubDiv = styled.div`
   width: 100%;
   display: flex;
   justify-content: flex-start;
+  margin-bottom: 10px;
 `;
-const ProductLabel = styled.label`
+const LabelDiv = styled.div`
   flex: 1;
 `;
-const ProductInput = styled.input`
-  flex: 2;
+const InputDiv = styled.div`
+  flex: 3;
 `;
-const ProductDesc = styled.textarea``;
+const ProductLabel = styled.label``;
+const ProductInput = styled.input`
+  width: 100%;
+`;
+const ProductDesc = styled.textarea`
+  width: 100%;
+`;
 const SubmitContainer = styled.div`
   display: flex;
   align-items: center;
@@ -60,10 +71,22 @@ const SubmitContainer = styled.div`
   margin-top: 20px;
   margin-bottom: 20px;
 `;
-const SubmitButton = styled.button``;
+const SubmitButton = styled.button`
+  padding: 7px 20px;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  font-size: 1em;
+  font-weight: 600;
+  background: #7b85cb;
+  &:hover {
+    background: #646fd4;
+    box-shadow: 0px 0px 10px 1px #ffffff;
+  }
+`;
 
 const EditTableModal = ({ productId, setOpen }) => {
-  const { tableData, loading, error, dispatch } = useContext(TableContext);
+  const { tableData, dispatch } = useContext(TableContext);
   const [productInfo, setProductInfo] = useState({
     productTitle: undefined,
     productPrice: undefined,
@@ -77,17 +100,14 @@ const EditTableModal = ({ productId, setOpen }) => {
     e.preventDefault();
 
     for (let i = 0; i < tableData.length; i++) {
-      // console.log(tableData[i]);
       //target the object having the same product id
       if (tableData[i].id === productId) {
         tableData[i].title = productInfo.productTitle;
         tableData[i].price = productInfo.productPrice;
         tableData[i].description = productInfo.productDesc;
         tableData[i].category.name = productInfo.productCategory;
-        // console.log(tableData);
       }
     }
-    // console.log(tableData);
     // update the data for that object
     //dispatch the updated object
 
@@ -109,44 +129,60 @@ const EditTableModal = ({ productId, setOpen }) => {
         <ProductContainer>
           <ProductForm>
             <ProductFormSubDiv>
-              <ProductLabel htmlFor="productTitle">Title</ProductLabel>
-              <ProductInput
-                type="text"
-                placeholder="Product Title"
-                id="productTitle"
-                name="productTitle"
-                onChange={handleChange}
-              />
+              <LabelDiv>
+                <ProductLabel htmlFor="productTitle">Title</ProductLabel>
+              </LabelDiv>
+              <InputDiv>
+                <ProductInput
+                  type="text"
+                  placeholder="Product Title"
+                  id="productTitle"
+                  name="productTitle"
+                  onChange={handleChange}
+                />
+              </InputDiv>
             </ProductFormSubDiv>
             <ProductFormSubDiv>
-              <ProductLabel htmlFor="productPrice">Price</ProductLabel>
-              <ProductInput
-                type="text"
-                placeholder="Product Price"
-                id="productPrice"
-                name="productPrice"
-                onChange={handleChange}
-              />
+              <LabelDiv>
+                <ProductLabel htmlFor="productPrice">Price</ProductLabel>
+              </LabelDiv>
+              <InputDiv>
+                <ProductInput
+                  type="text"
+                  placeholder="Product Price"
+                  id="productPrice"
+                  name="productPrice"
+                  onChange={handleChange}
+                />
+              </InputDiv>
             </ProductFormSubDiv>
             <ProductFormSubDiv>
-              <ProductLabel htmlFor="productDesc">Description</ProductLabel>
-              <ProductDesc
-                cols={45}
-                placeholder="Product Description"
-                id="productDesc"
-                name="productDesc"
-                onChange={handleChange}
-              />
+              <LabelDiv>
+                <ProductLabel htmlFor="productDesc">Description</ProductLabel>
+              </LabelDiv>
+              <InputDiv>
+                <ProductDesc
+                  cols={45}
+                  placeholder="Product Description"
+                  id="productDesc"
+                  name="productDesc"
+                  onChange={handleChange}
+                />
+              </InputDiv>
             </ProductFormSubDiv>
             <ProductFormSubDiv>
-              <ProductLabel htmlFor="productCategory">Category</ProductLabel>
-              <ProductInput
-                type="text"
-                placeholder="Product Category"
-                id="productCategory"
-                name="productCategory"
-                onChange={handleChange}
-              />
+              <LabelDiv>
+                <ProductLabel htmlFor="productCategory">Category</ProductLabel>
+              </LabelDiv>
+              <InputDiv>
+                <ProductInput
+                  type="text"
+                  placeholder="Product Category"
+                  id="productCategory"
+                  name="productCategory"
+                  onChange={handleChange}
+                />
+              </InputDiv>
             </ProductFormSubDiv>
           </ProductForm>
         </ProductContainer>
