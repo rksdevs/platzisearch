@@ -14,7 +14,6 @@ import { TableContext } from "../context/TableContext";
 import styled from "styled-components";
 import EditTableModal from "./EditTableModal";
 import Switch from "@mui/material/Switch";
-import { keys } from "@mui/system";
 
 const TableHeadingContainer = styled.div``;
 const TableName = styled.h2``;
@@ -41,9 +40,6 @@ export default function BasicTable() {
   const [toggleDescending, setToggleDescending] = useState(true);
   const [query, setQuery] = useState("");
   const [sortingOrder, setSortingOrder] = useState("");
-  const [testTableData, setTestTableData] = useState([]);
-  // const [sortField, setSortField] = useState("");
-  // const [order, setOrder] = useState("asc");
 
   //Function to fetch data from API & store in local storage
 
@@ -70,7 +66,7 @@ export default function BasicTable() {
         type: "TABLE_DATA_FETCH_SUCCESS",
         payload: result.data.splice(1, 20),
       });
-      setTestTableData(result.data.splice(1, 20));
+      // setTestTableData(result.data.splice(1, 20));
     };
     fetchTableData();
   }, []);
@@ -112,7 +108,7 @@ export default function BasicTable() {
 
   const handleDropDown = (e) => {
     setSortCategory(e.target.value);
-    console.log(sortCategory);
+    // console.log(sortCategory);
   };
 
   const handleToggle = (e) => {
@@ -123,16 +119,25 @@ export default function BasicTable() {
     sortingTable();
   };
 
-  //sorting algorith
+  //sorting function
 
   let sortingTable = () => {
-    // const reversed = sortingOrder === "asc" ? 1 : -1;
-    // setTestTableData(
-    //   tableData.sort((a, b) => {
-    //     reversed * a.title.localeCompare(b.title);
-    //   })
-    // );
-    // dispatch({ type: "TABLE_DATA_FETCH_SUCCESS", payload: tempData });
+    function compare(a, b) {
+      // asc
+      if (!toggleDescending) {
+        if (sortCategory === "category") {
+          return a[sortCategory].name > b[sortCategory].name ? 1 : -1;
+        }
+        return a[sortCategory] > b[sortCategory] ? 1 : -1;
+      } else {
+        //desc
+        if (sortCategory === "category") {
+          return a[sortCategory].name < b[sortCategory].name ? 1 : -1;
+        }
+        return a[sortCategory] < b[sortCategory] ? 1 : -1;
+      }
+    }
+    tableData.sort(compare);
   };
 
   return (
@@ -146,7 +151,7 @@ export default function BasicTable() {
           />
         </SearchInputDiv>
         <SelectInputDiv>
-          <select id="sortType" name="sortType" onClick={handleDropDown}>
+          <select id="sortType" name="sortType" onClickCapture={handleDropDown}>
             <option value="id">Id</option>
             <option value="title">Title</option>
             <option value="price">Price</option>
@@ -178,7 +183,7 @@ export default function BasicTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {search(testTableData)?.map((row) => (
+            {search(tableData)?.map((row) => (
               <TableRow
                 key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

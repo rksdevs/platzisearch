@@ -1,6 +1,9 @@
 import Switch from "@mui/material/Switch";
+import { useContext } from "react";
 import styled from "styled-components";
 import BasicTable from "../components/BasicTable";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const MainContainer = styled.div`
   display: flex;
@@ -27,32 +30,29 @@ const SelectInputDiv = styled.div``;
 const ToggleInputDiv = styled.div``;
 const TableContainer = styled.div``;
 const FetchData = styled.div``;
+const LogoutButton = styled.button``;
+const LogoutButtonDiv = styled.div``;
 
 const Home = () => {
+  const { user, dispatch } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    dispatch({ type: "LOGOUT" });
+    navigate("/login");
+  };
+
   return (
     <MainContainer>
       <HeadingContainer>
         <Heading>Platzi Table</Heading>
+        {user && (
+          <LogoutButtonDiv>
+            <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
+          </LogoutButtonDiv>
+        )}
       </HeadingContainer>
-      {/* <SearchContainer>
-        <SearchInputDiv>
-          <input type="text" placeholder="search" />
-        </SearchInputDiv>
-        <SelectInputDiv>
-          <select id="cars" name="cars">
-            <option value="id">Id</option>
-            <option value="title">Title</option>
-            <option value="price">Price Title</option>
-            <option value="description">Description</option>
-            <option value="category">Category Name</option>
-          </select>
-        </SelectInputDiv>
-        <ToggleInputDiv>
-          Ascending
-          <Switch {...label} />
-          Descending
-        </ToggleInputDiv>
-      </SearchContainer> */}
       <TableContainer>
         <BasicTable />
       </TableContainer>
