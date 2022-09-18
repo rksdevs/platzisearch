@@ -156,7 +156,7 @@ export default function BasicTable() {
   //Search function
 
   const search = (data) => {
-    return data.filter(
+    return data?.filter(
       (item) =>
         item.title.toLowerCase().includes(query) ||
         item.description.toLowerCase().includes(query) ||
