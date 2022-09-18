@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthContext, AuthContextProvider } from "./context/AuthContext";
 import { useContext } from "react";
+import { TableContextProvider } from "./context/TableContext";
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -19,21 +20,23 @@ function App() {
 
   return (
     <AuthContextProvider>
-      <BrowserRouter>
-        {/* Hi Mom */}
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+      <TableContextProvider>
+        <BrowserRouter>
+          {/* Hi Mom */}
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </TableContextProvider>
     </AuthContextProvider>
   );
 }

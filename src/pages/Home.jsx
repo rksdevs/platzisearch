@@ -26,6 +26,7 @@ const SearchInputDiv = styled.div``;
 const SelectInputDiv = styled.div``;
 const ToggleInputDiv = styled.div``;
 const TableContainer = styled.div``;
+const FetchData = styled.div``;
 
 const Home = () => {
   const label = { inputProps: { "aria-label": "Switch demo" } };
