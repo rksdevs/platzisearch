@@ -12,6 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { TableContext } from "../context/TableContext";
 import styled from "styled-components";
+import EditTableModal from "./EditTableModal";
 
 const TableHeadingContainer = styled.div``;
 const TableName = styled.h2``;
@@ -21,6 +22,8 @@ export default function BasicTable() {
   const { tableData, loading, error, dispatch } = useContext(TableContext);
   const [tableDataRaw, setTableDataRaw] = useState([]);
   const [tableDataToMap, setTableDataToMap] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   //Function to fetch data from API & store in local storage
 
@@ -66,8 +69,9 @@ export default function BasicTable() {
   };
 
   const handleEdit = (e) => {
-    // e.preventDefault();
+    e.preventDefault();
     // console.log(e);
+    setModalOpen(!modalOpen);
   };
 
   useEffect(() => {
@@ -118,6 +122,7 @@ export default function BasicTable() {
           ))}
         </TableBody>
       </Table>
+      {modalOpen && <EditTableModal setOpen={setModalOpen} />}
     </TableContainer>
   );
 }
